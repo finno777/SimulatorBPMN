@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1sggej6" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:collaboration id="Collaboration_1j7n2bp">
+    <bpmn:participant id="Participant_182i0c1" name="Simulator" processRef="Process_088n9s9" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_088n9s9" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Init" camunda:asyncAfter="true">
+      <bpmn:outgoing>Flow_1i4o3f6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1i4o3f6" sourceRef="StartEvent_1" targetRef="Activity_1bplls7" />
+    <bpmn:scriptTask id="Activity_1k8bl5p" name="Validate" scriptFormat="JavaScript" camunda:resultVariable="scriptOutput">
+      <bpmn:incoming>Flow_11nblxp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bt9lqr</bpmn:outgoing>
+      <bpmn:script>var sigValidity = execution.getVariable("SignatureValidity");
+if ( sigValidity == true ) {
+ execution.setVariable("SignatureAcceptedTF", true);
+} else if ( sigValidity == false) {
+ throw new org.camunda.bpm.engine.delegate.BpmnError("SignatureError");
+}</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="Event_0ohugif" name="Problem with Signature" attachedToRef="Activity_1k8bl5p">
+      <bpmn:outgoing>Flow_13cq6hq</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1v5mjf4" camunda:errorCodeVariable="Signature Error" camunda:errorMessageVariable="SignatureError" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_13cq6hq" sourceRef="Event_0ohugif" targetRef="Activity_1q58cxo" />
+    <bpmn:sequenceFlow id="Flow_0bt9lqr" sourceRef="Activity_1k8bl5p" targetRef="Activity_1nyyj00" />
+    <bpmn:sequenceFlow id="Flow_0kamnzs" sourceRef="Activity_1nyyj00" targetRef="Event_1rs64z5" />
+    <bpmn:sequenceFlow id="Flow_1g321cm" sourceRef="Activity_1q58cxo" targetRef="Event_112unct" />
+    <bpmn:sequenceFlow id="Flow_11nblxp" sourceRef="Activity_1bplls7" targetRef="Activity_1k8bl5p" />
+    <bpmn:serviceTask id="Activity_1bplls7" name="Init Service" camunda:delegateExpression="${InitService}">
+      <bpmn:incoming>Flow_1i4o3f6</bpmn:incoming>
+      <bpmn:outgoing>Flow_11nblxp</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1q58cxo" name="Trouble Service" camunda:delegateExpression="${TroubleService}">
+      <bpmn:incoming>Flow_13cq6hq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g321cm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1nyyj00" name="Normal Service" camunda:delegateExpression="${NormalService}">
+      <bpmn:incoming>Flow_0bt9lqr</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kamnzs</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1rs64z5">
+      <bpmn:incoming>Flow_0kamnzs</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_112unct">
+      <bpmn:incoming>Flow_1g321cm</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:textAnnotation id="TextAnnotation_1po4jdl">
+      <bpmn:text>Input activityId</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0p8051h" sourceRef="StartEvent_1" targetRef="TextAnnotation_1po4jdl" />
+  </bpmn:process>
+  <bpmn:error id="Error_1nrs6ct" name="Error_0g94lg3" errorCode="Signature Error" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1j7n2bp">
+      <bpmndi:BPMNShape id="Participant_182i0c1_di" bpmnElement="Participant_182i0c1" isHorizontal="true">
+        <dc:Bounds x="129" y="100" width="831" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_11nblxp_di" bpmnElement="Flow_11nblxp">
+        <di:waypoint x="460" y="220" />
+        <di:waypoint x="550" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g321cm_di" bpmnElement="Flow_1g321cm">
+        <di:waypoint x="820" y="298" />
+        <di:waypoint x="892" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kamnzs_di" bpmnElement="Flow_0kamnzs">
+        <di:waypoint x="820" y="220" />
+        <di:waypoint x="892" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bt9lqr_di" bpmnElement="Flow_0bt9lqr">
+        <di:waypoint x="650" y="220" />
+        <di:waypoint x="720" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13cq6hq_di" bpmnElement="Flow_13cq6hq">
+        <di:waypoint x="610" y="278" />
+        <di:waypoint x="610" y="298" />
+        <di:waypoint x="720" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i4o3f6_di" bpmnElement="Flow_1i4o3f6">
+        <di:waypoint x="228" y="220" />
+        <di:waypoint x="360" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="192" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="245" width="16" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1k8bl5p_di" bpmnElement="Activity_1k8bl5p">
+        <dc:Bounds x="550" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1520538_di" bpmnElement="Activity_1bplls7">
+        <dc:Bounds x="360" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1q58cxo_di" bpmnElement="Activity_1q58cxo">
+        <dc:Bounds x="720" y="258" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nyyj00_di" bpmnElement="Activity_1nyyj00">
+        <dc:Bounds x="720" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1po4jdl_di" bpmnElement="TextAnnotation_1po4jdl">
+        <dc:Bounds x="230" y="120" width="100" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rs64z5_di" bpmnElement="Event_1rs64z5">
+        <dc:Bounds x="892" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_112unct_di" bpmnElement="Event_112unct">
+        <dc:Bounds x="892" y="280" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ohugif_di" bpmnElement="Event_0ohugif">
+        <dc:Bounds x="592" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="579" y="285" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0p8051h_di" bpmnElement="Association_0p8051h">
+        <di:waypoint x="221" y="206" />
+        <di:waypoint x="268" y="150" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

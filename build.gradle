@@ -1,0 +1,53 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.tsystems'
+version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'com.jayway.jsonpath:json-path:2.5.0'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'com.rabbitmq:http-client:3.9.0.RELEASE'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.json:json:20171018'
+    implementation files('C:\\Users\\iiarosla\\Desktop\\Project\\Wholesale\\ExceptionHandlerStarter\\build\\libs\\ExceptionHandlerStarter-1.0-SNAPSHOT.jar')
+
+    implementation platform('org.camunda.bpm:camunda-bom:7.15.0')
+
+    compile 'org.camunda.bpm:camunda-engine:7.15.0'
+    implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.15.0'
+//    compile 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest'
+//    compile 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp-ee'
+//    compile 'org.camunda.bpm:camunda-external-task-client:1.4.1'
+// compile 'org.camunda.bpm:camunda-engine-plugin-spin'
+   // compile 'org.camunda.spin:camunda-spin-core'
+    //compile 'org.camunda.spin:camunda-spin-dataformat-all'
+    //implementation group: 'org.camunda.bpm.extension', name: 'camunda-bpm-junit5', version: '1.0.0'
+}
+
+test {
+    useJUnitPlatform()
+}

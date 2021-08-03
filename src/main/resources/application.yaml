@@ -1,0 +1,27 @@
+rabbitmq:
+  host: localhost
+  port: 5671
+  username: guest
+  password: guest
+  port-client: 15672
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/simulator
+    username: postgres
+    password: 1
+    driverClassName: org.postgresql.Driver
+queue:
+  queueName: queue-in
+  exchangeName: amq.direct
+  routingKey: queue-in-key
+q:
+  starter:
+    queueName: queue-starter
+    exchange: amq.direct
+    routingkey: queue-in-key

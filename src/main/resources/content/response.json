@@ -1,0 +1,20 @@
+{
+  "queueOutProperties": {
+    "name": "queue-out",
+    "exchange": "amq.direct",
+    "routingKey": "queue-out-key",
+    "created": true
+  },
+  "queueInProperties": [
+    {
+      "jsonPath": "$.store.bicycle.color",
+      "valueMatcher": "red"
+    },
+    {
+      "jsonPath": "$.store.auto.color",
+      "valueMatcher": "blue"
+    }
+  ],
+  "predicate": "OR",
+  "message": "message mars"
+}
