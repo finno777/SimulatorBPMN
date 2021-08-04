@@ -1,14 +1,22 @@
 package com.tsystems.simulator.service.delegate;
 
+import de.telekom.blwmsa.exceptionhandlerstarter.service.ModificationService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
+import org.camunda.bpm.engine.rest.impl.CamundaRestResources;
+import org.camunda.bpm.engine.runtime.ActivityInstance;
+import org.camunda.bpm.spring.boot.starter.rest.CamundaBpmRestInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import de.telekom.blwmsa.exceptionhandlerstarter.service.ModificationService;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -19,28 +27,57 @@ import java.util.stream.Collectors;
 public class TroubleService implements JavaDelegate {
 
     @Autowired
-    private final HistoryService historyService;
+    protected RuntimeService runtimeService;
+
+    @Autowired
+    protected HistoryService historyService;
+
+    @Autowired
+    protected ModificationService modificationService;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         System.out.println("Start exception");
         String instanceId = execution.getProcessInstanceId();
+        String scopeActivityId = "Activity_1frg2hj";
 
-        List<HistoricActivityInstance> list = historyService.createHistoricActivityInstanceQuery().list();
+        //modificationService.doContinue(instanceId, scopeActivityId);
+        doContinue(instanceId, scopeActivityId);
 
-        List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(instanceId).list();
-        List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery().processInstanceId(instanceId).list();
+    }
+
+    public void doContinue(String processInstanceId, String scopeActivityId) {
+
+        List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId).list();
+
+        List<HistoricActivityInstance> activitiesToStart = getCancelledActivityInstances(historicActivityInstances,
+                scopeActivityId);
 
 
+        for (HistoricActivityInstance activityInstance : activitiesToStart) {
+            runtimeService.createProcessInstanceModification(processInstanceId)
+                    .startAfterActivity(activityInstance.getActivityId())
+                    .execute();
+        }
 
-        Optional<String> optionalS = historicActivityInstances.stream()
-                .filter(activityInstance -> activityInstance.getActivityId().equals(execution.getCurrentActivityId()))
-                .map(HistoricActivityInstance::getId).findAny();
-        List<HistoricActivityInstance> collection = historicActivityInstances.stream()
+    }
+
+    public List<HistoricActivityInstance> getCancelledActivityInstances(List<HistoricActivityInstance> historicActivityInstances,
+                                                                        String scopeActivityId) {
+
+        Optional<String> exceptionHandlingScopeId = getActivityInstanceId(historicActivityInstances, scopeActivityId);
+
+        return historicActivityInstances.stream()
                 .filter(activityInstance -> BooleanUtils.isTrue(activityInstance.isCanceled()) &&
-                        optionalS.get().equals(activityInstance.getParentActivityInstanceId()))
+                        exceptionHandlingScopeId.get().equals(activityInstance.getParentActivityInstanceId()))
                 .collect(Collectors.toList());
+    }
 
-        collection.forEach(System.out::println);
+    private Optional<String> getActivityInstanceId(List<HistoricActivityInstance> activityInstances,
+                                                   String activityId) {
+        return activityInstances.stream()
+                .filter(activityInstance -> activityInstance.getActivityId().equals(activityId))
+                .map(HistoricActivityInstance::getId).findAny();
     }
 }
