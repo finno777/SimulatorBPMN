@@ -39,13 +39,7 @@ dependencies {
 
     compile 'org.camunda.bpm:camunda-engine:7.15.0'
     implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:7.15.0'
-//    compile 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest'
-//    compile 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp-ee'
-//    compile 'org.camunda.bpm:camunda-external-task-client:1.4.1'
-// compile 'org.camunda.bpm:camunda-engine-plugin-spin'
-   // compile 'org.camunda.spin:camunda-spin-core'
-    //compile 'org.camunda.spin:camunda-spin-dataformat-all'
-    //implementation group: 'org.camunda.bpm.extension', name: 'camunda-bpm-junit5', version: '1.0.0'
+    implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:7.15.0'
 }
 
 test {
